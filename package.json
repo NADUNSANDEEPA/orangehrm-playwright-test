@@ -1,0 +1,22 @@
+{
+  "name": "orangehrm-playwright-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NADUNSANDEEPA/orangehrm-playwright-test.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NADUNSANDEEPA/orangehrm-playwright-test/issues"
+  },
+  "homepage": "https://github.com/NADUNSANDEEPA/orangehrm-playwright-test#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.8.1"
+  }
+}
