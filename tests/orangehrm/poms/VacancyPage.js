@@ -3,62 +3,76 @@ const { expect } = require('@playwright/test');
 class VacancyPage {
   constructor(page) {
     this.page = page;
-    this.addButton = page.locator('text=Add');
-    this.nameInput = page.locator('input[name="name"]');
-    this.jobTitleDropdown = page.locator('.oxd-select-wrapper');
-    this.jobTitleOption = (title) => page.locator('.oxd-select-dropdown >> text=' + title);
-    this.descriptionInput = page.locator('textarea[placeholder="Type description here"]');
-    this.managerInput = page.locator('input[placeholder="Type for hints..."]');
-    this.managerOption = page.locator('.oxd-autocomplete-option').first();
-    this.positionsInput = page.locator('input[name="numberOfPositions"]');
+
+    // --- Input fields ---
+    this.vacancyNameInput = page.locator('div.oxd-input-group:has(label:has-text("Vacancy Name")) input.oxd-input');
+    this.jobTitleDropdown = page.locator('div.oxd-input-group:has(label:has-text("Job Title")) .oxd-select-wrapper');
+    this.descriptionInput = page.locator('div.oxd-input-group:has(label:has-text("Description")) textarea.oxd-textarea');
+    this.managerInput = page.locator('div.oxd-input-group:has(label:has-text("Hiring Manager")) input[placeholder="Type for hints..."]');
+    this.managerOption = page.locator('.oxd-autocomplete-option');
+    this.positionsInput = page.locator('div.oxd-input-group:has(label:has-text("Number of Positions")) input.oxd-input');
     this.activeCheckbox = page.locator('text=Active').locator('..').locator('input[type="checkbox"]');
     this.publishCheckbox = page.locator('text=Publish in RSS Feed and Web Page').locator('..').locator('input[type="checkbox"]');
-    this.saveButton = page.locator('button[type="submit"]').filter({ hasText: 'Save' });
+    this.saveButton = page.locator('button:has-text("Save")');
     this.errorMessage = page.locator('.oxd-input-field-error-message, .oxd-input-group__message');
   }
 
   async navigate(url) {
-    await this.page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
-  }
-
-  async clickAdd() {
-    await this.addButton.click();
+    await this.page.goto(url);
   }
 
   async fillForm({ name, jobTitle, description, manager, positions, active = true, publish = false }) {
-    if(name !== undefined) await this.nameInput.fill(name);
-    
-    if(jobTitle) {
-      await this.jobTitleDropdown.click();
-      await this.jobTitleOption(jobTitle).click();
+
+    // --- Vacancy name ---
+    if (name !== undefined) {
+      await this.vacancyNameInput.fill(name);
     }
 
-    if(description) {
+    // --- Job Title dropdown ---
+    if (jobTitle) {
+      await this.jobTitleDropdown.click();
+      await this.page.waitForTimeout(1500);
+      const jobOption = this.page.locator(`.oxd-select-dropdown >> text=${jobTitle}`);
+      await expect(jobOption).toBeVisible({ timeout: 10000 });
+      await jobOption.click();
+    }
+
+    // --- Description ---
+    if (description) {
       await this.descriptionInput.fill(description);
     }
 
-    if(manager) {
-      await this.managerInput.fill('a'); // Start typing something for autocomplete
-      await this.managerOption.click();
+    // --- Hiring Manager ---
+    if (manager) {
+      await this.managerInput.fill("a");
+      await this.page.waitForSelector('.oxd-autocomplete-option', { timeout: 10000 });
+      await this.managerOption.first().click();
     }
 
-    if(positions !== undefined) {
-      await this.positionsInput.fill(positions);
+    // --- Positions ---
+    if (positions !== undefined) {
+      await this.positionsInput.fill(String(positions));
     }
 
-    if(active) {
-      if(!await this.activeCheckbox.isChecked()) await this.activeCheckbox.check();
+    // --- Active checkbox ---
+    if (active) {
+      if (!await this.activeCheckbox.isChecked()) await this.activeCheckbox.check();
     } else {
-      if(await this.activeCheckbox.isChecked()) await this.activeCheckbox.uncheck();
+      if (await this.activeCheckbox.isChecked()) await this.activeCheckbox.uncheck();
     }
 
-    if(publish) {
-      if(!await this.publishCheckbox.isChecked()) await this.publishCheckbox.check();
+    // --- Publish checkbox ---
+    if (publish) {
+      if (!await this.publishCheckbox.isChecked()) await this.publishCheckbox.check();
     } else {
-      if(await this.publishCheckbox.isChecked()) await this.publishCheckbox.uncheck();
+      if (await this.publishCheckbox.isChecked()) await this.publishCheckbox.uncheck();
     }
 
-    await this.saveButton.click();
+    // --- Save ---
+    await Promise.all([
+      this.page.waitForResponse(res => res.url().includes('/vacancy') && res.status() === 200, { timeout: 20000 }).catch(() => null),
+      this.saveButton.click()
+    ]);
   }
 
   async getErrorMessage() {

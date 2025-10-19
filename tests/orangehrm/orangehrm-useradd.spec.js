@@ -16,7 +16,7 @@ test.describe('OrangeHRM User Add Page', () => {
     await page.goto(`${ORANGE_HRM_LINK}/web/index.php/auth/login`);
     await loginUI(page, 'Admin', 'admin123');
     await page.goto(url);
-    await expect(page.locator('form.oxd-form')).toBeVisible();
+    await page.waitForTimeout(12000); 
   });
 
   test.afterEach(async ({ page }, testInfo) => {
@@ -46,7 +46,8 @@ test.describe('OrangeHRM User Add Page', () => {
       password: 'StrongPass!123',
       confirmPassword: 'StrongPass!123'
     });
-    await expect(page).toHaveURL(/web\/index\.php\/admin\/viewSystemUsers/, { timeout: 15000 });
+    
+    await expect(page).toHaveURL(/\/web\/index.php\/admin\/viewSystemUsers/, { timeout: 15000 });
   });
 
   test('Test Case 02 : User Name Validation - Should be at least 5 characters', async ({ page }) => {

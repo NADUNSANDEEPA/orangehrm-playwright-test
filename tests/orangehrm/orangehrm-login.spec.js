@@ -63,27 +63,21 @@ test.describe('Login Page - OrangeHRM', () => {
   test('Test Case 03 : Shows error with invalid credentials and captures screenshot', async ({ page }) => {
     const start = Date.now();
 
-    // Navigate to login page
     await page.goto(url);
 
-    // Fill invalid credentials
     await page.fill('input[name="username"]', 'wrongUser');
     await page.fill('input[name="password"]', 'wrongPass');
 
-    // Click login button and wait for error to appear
     await Promise.all([
       page.waitForSelector('.oxd-alert-content-text', { state: 'visible', timeout: 10000 }),
       page.click('button[type="submit"]'),
     ]);
 
-    // Create locator for error message
     const alertContent = page.locator('.oxd-alert-content-text');
 
-    // Assert error text
     await expect(alertContent).toBeVisible();
     await expect(alertContent).toContainText('Invalid credentials');
 
-    // Capture screenshot for failure analysis
     await page.screenshot({ path: 'invalid-login.png' });
 
     console.log('invalid credentials test execution time (ms):', Date.now() - start);

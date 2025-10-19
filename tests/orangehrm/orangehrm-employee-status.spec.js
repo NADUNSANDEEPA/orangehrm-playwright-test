@@ -15,7 +15,7 @@ test.describe('OrangeHRM Employee Status Form', () => {
         await page.goto(`${ORANGE_HRM_LINK}/web/index.php/auth/login`);
         await loginUI(page, 'Admin', 'admin123');
         await page.goto(url);
-        await expect(page.locator('input[name="name"]')).toBeVisible({ timeout: 10000 });
+        await expect(page.locator('label.oxd-label:has-text("Name")')).toBeVisible({ timeout: 10000 });
     });
 
     test.afterEach(async ({ page }, testInfo) => {
