@@ -3,8 +3,6 @@ const { PARA_BANK_LINK } = require('../../config');
 const { fillRegistrationForm, checkErrorMessage } = require('./helpers/bankLoginHelper');
 const { GlobalCredentialsForBank } = require('./GlobalCredentialsForBank');
 
-GlobalCredentialsForBank.setUsername("user" + Math.random().toString(16).slice(2));
-GlobalCredentialsForBank.setPassword("Password123!");
 
 test.describe('Parabank Registration Tests Using Commands', () => {
 

@@ -1,6 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { GlobalCredentialsForBank } = require('./GlobalCredentialsForBank');
 const { PARA_BANK_LINK } = require('../../config');
+const { loginParabank } = require('./helpers/bankLoginHelper');
 
 const links = [
   { text: 'Open New Account', href: 'openaccount.htm' },
@@ -14,8 +15,7 @@ const links = [
 ];
 
 test.beforeAll(() => {
-  GlobalCredentialsForBank.setUsername("user" + Math.random().toString(16).slice(2));
-  GlobalCredentialsForBank.setPassword("Password123!");
+   console.log("Setting up global credentials for tests");
 });
 
 test.describe('Parabank Sidebar Links', () => {

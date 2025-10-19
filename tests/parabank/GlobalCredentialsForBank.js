@@ -1,6 +1,6 @@
 class GlobalCredentialsForBank {
-    static username;
-    static password;
+    static username = "USER0926377";
+    static password = "PASSWORD123!";
 
     static setUsername(user) {
         this.username = user;

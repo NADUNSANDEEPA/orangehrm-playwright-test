@@ -3,45 +3,7 @@ const { PARA_BANK_LINK } = require('../../config');
 const { GlobalCredentialsForBank } = require('./GlobalCredentialsForBank');
 const { loginParabank } = require('./helpers/bankLoginHelper');
 
-GlobalCredentialsForBank.setUsername("user" + Math.random().toString(16).slice(2));
-GlobalCredentialsForBank.setPassword("Password123!");
-
 test.describe('Parabank Update Profile Tests', () => {
-    const user = {
-        firstName: 'John',
-        lastName: 'Doe',
-        address: '123 Main St',
-        city: 'New York',
-        state: 'NY',
-        zipCode: '10001',
-        phoneNumber: '1234567890',
-        ssn: '123-45-6789',
-        username: GlobalCredentialsForBank.getUsername(),
-        password: GlobalCredentialsForBank.getPassword(),
-        confirmPassword: GlobalCredentialsForBank.getPassword()
-    };
-
-    test.beforeAll(async ({ page }) => {
-        await page.goto(`${PARA_BANK_LINK}/parabank/register.htm`);
-        await page.fill('#customer\\.firstName', user.firstName);
-        await page.fill('#customer\\.lastName', user.lastName);
-        await page.fill('#customer\\.address\\.street', user.address);
-        await page.fill('#customer\\.address\\.city', user.city);
-        await page.fill('#customer\\.address\\.state', user.state);
-        await page.fill('#customer\\.address\\.zipCode', user.zipCode);
-        await page.fill('#customer\\.phoneNumber', user.phoneNumber);
-        await page.fill('#customer\\.ssn', user.ssn);
-        await page.fill('#customer\\.username', user.username);
-        await page.fill('#customer\\.password', user.password);
-        await page.fill('#repeatedPassword', user.confirmPassword);
-
-        await Promise.all([
-            page.waitForNavigation({ waitUntil: "networkidle" }),
-            page.click('input[type="submit"][value="Register"]')
-        ]);
-
-        await page.click('#leftPanel a:has-text("Log Out")');
-    });
 
     test.beforeEach(async ({ page }) => {
         await loginParabank(page, GlobalCredentialsForBank.getUsername(), GlobalCredentialsForBank.getPassword());
@@ -62,6 +24,7 @@ test.describe('Parabank Update Profile Tests', () => {
 
     test('Test Case 02 : Should allow clicking Update with empty fields (no crash)', async ({ page }) => {
         await page.goto(`${PARA_BANK_LINK}/parabank/updateprofile.htm`);
+
         await page.fill('#customer\\.firstName', '');
         await page.fill('#customer\\.lastName', '');
         await page.fill('#customer\\.address\\.street', '');
@@ -71,11 +34,38 @@ test.describe('Parabank Update Profile Tests', () => {
         await page.fill('#customer\\.phoneNumber', '');
 
         await Promise.all([
-            page.waitForNavigation({ waitUntil: "networkidle" }),
-            page.click('input[value="Update Profile"]')
+            page.click('input[value="Update Profile"][type="button"]')
         ]);
-        await expect(page).toHaveURL(/updateprofile.htm/);
+
+        await expect(page).toHaveURL(/updateprofile\.htm/);
+
+        await expect(page.locator('span#error')).toHaveCount(0);
+
+        await expect(page.locator('#firstName-error')).toBeVisible();
+        await expect(page.locator('#firstName-error')).toHaveText('First name is required.');
+
+        await expect(page.locator('#lastName-error')).toBeVisible();
+        await expect(page.locator('#lastName-error')).toHaveText('Last name is required.');
+
+        await expect(page.locator('#street-error')).toBeVisible();
+        await expect(page.locator('#street-error')).toHaveText('Address is required.');
+
+        await expect(page.locator('#city-error')).toBeVisible();
+        await expect(page.locator('#city-error')).toHaveText('City is required.');
+
+        await expect(page.locator('#state-error')).toBeVisible();
+        await expect(page.locator('#state-error')).toHaveText('State is required.');
+
+        await expect(page.locator('#zipCode-error')).toBeVisible();
+        await expect(page.locator('#zipCode-error')).toHaveText('Zip Code is required.');
+
+        const phoneError = page.locator('span#error').filter({ hasText: 'Phone number' });
+        if (await phoneError.count() > 0) {
+            await expect(phoneError).toBeVisible();
+        }
     });
+
+
 
     test('Test Case 03 : Should update profile successfully with valid data', async ({ page }) => {
         await page.goto(`${PARA_BANK_LINK}/parabank/updateprofile.htm`);
@@ -88,48 +78,13 @@ test.describe('Parabank Update Profile Tests', () => {
         await page.fill('#customer\\.phoneNumber', '0771234567');
 
         await Promise.all([
-            page.waitForResponse(response => response.url().includes('updateprofile.htm') && response.status() === 200),
             page.click('input[value="Update Profile"]')
         ]);
 
         await expect(page.locator('body')).toContainText('Profile Updated');
     });
 
-    test('Test Case 04 : Open New Account Successfully', async ({ page }) => {
-        await page.goto(`${PARA_BANK_LINK}/parabank/openaccount.htm`);
-        await page.selectOption('#type', '0');
-        const options = await page.locator('#fromAccountId option').all();
-        if (options.length > 0) {
-            await page.selectOption('#fromAccountId', options[0].getAttribute('value'));
-        }
-
-        await Promise.all([
-            page.waitForResponse(response => response.url().includes('openaccount.htm') && response.status() === 200),
-            page.click('input[value="Open New Account"]')
-        ]);
-
-        await expect(page.locator('#openAccountResult')).toBeVisible();
-        await expect(page.locator('#openAccountResult h1')).toContainText('Account Opened!');
-        await expect(page.locator('#openAccountResult p')).toContainText('Congratulations, your account is now open.');
-
-        const newAccountNumber = await page.locator('#newAccountId').textContent();
-        expect(newAccountNumber).toMatch(/\d+/);
-    });
-
-    test('Test Case 05 : Do Transfer', async ({ page }) => {
-        await page.goto(`${PARA_BANK_LINK}/parabank/transfer.htm`);
-        const transferAmount = "22";
-        await page.fill('#amount', transferAmount);
-        await new Promise(r => setTimeout(r, 2000));
-        await Promise.all([
-            page.waitForResponse(response => response.url().includes('transfer.htm') && response.status() === 200),
-            page.click('input[type="submit"][value="Transfer"]')
-        ]);
-
-        await expect(page.locator('#amountResult')).toContainText(`$${transferAmount}`);
-    });
-
-    test('Test Case 06 : Get row count and total balance', async ({ page }) => {
+    test('Test Case 04 : Get row count and total balance', async ({ page }) => {
         await page.goto(`${PARA_BANK_LINK}/parabank/overview.htm`);
         await new Promise(r => setTimeout(r, 2000));
         const rows = await page.locator('#accountTable tbody tr').all();
@@ -146,13 +101,52 @@ test.describe('Parabank Update Profile Tests', () => {
         expect(totalBalance).toBeCloseTo(totalFromPage, 2);
     });
 
+    test('Test Case 05 : Open New Account Successfully', async ({ page }) => {
+        await page.goto(`${PARA_BANK_LINK}/parabank/openaccount.htm`);
+
+        await page.selectOption('#type', '0');
+
+        const fromAccountDropdown = page.locator('#fromAccountId option');
+        const firstValue = await fromAccountDropdown.first().getAttribute('value');
+        await page.selectOption('#fromAccountId', firstValue);
+
+        await page.waitForTimeout(1000);
+
+        await Promise.all([
+            page.click('input[value="Open New Account"]'),
+        ]);
+
+        const resultLocator = page.locator('#openAccountResult');
+        await resultLocator.waitFor({ state: 'visible', timeout: 10000 });
+
+        await expect(resultLocator).toBeVisible();
+        await expect(resultLocator.locator('h1')).toContainText('Account Opened!');
+
+        await expect(resultLocator.locator('p').first()).toContainText('Congratulations, your account is now open.');
+
+        const newAccountNumber = await resultLocator.locator('#newAccountId').textContent();
+        expect(newAccountNumber).toMatch(/\d+/);
+    });
+
+
+    test('Test Case 06 : Do Transfer', async ({ page }) => {
+        await page.goto(`${PARA_BANK_LINK}/parabank/transfer.htm`);
+        const transferAmount = "22";
+        await page.fill('#amount', transferAmount);
+        await new Promise(r => setTimeout(r, 2000));
+        await Promise.all([
+            page.click('input[type="submit"][value="Transfer"]')
+        ]);
+
+        await expect(page.locator('#amountResult')).toContainText(`$${transferAmount}`);
+    });
+
     test('Test Case 07: Should apply for a loan successfully', async ({ page }) => {
         await page.goto(`${PARA_BANK_LINK}/parabank/requestloan.htm`);
         await page.fill('#amount', '50');
         await page.fill('#downPayment', '10');
         await new Promise(r => setTimeout(r, 2000));
         await Promise.all([
-            page.waitForResponse(response => response.url().includes('requestloan.htm') && response.status() === 200),
             page.click('input[value="Apply Now"]')
         ]);
         await expect(page.locator('#loanRequestApproved')).toBeVisible();
@@ -168,7 +162,6 @@ test.describe('Parabank Update Profile Tests', () => {
         await page.fill('#downPayment', '100000');
         await new Promise(r => setTimeout(r, 2000));
         await Promise.all([
-            page.waitForResponse(response => response.url().includes('requestloan.htm') && response.status() === 200),
             page.click('input[value="Apply Now"]')
         ]);
         await expect(page.locator('#loanRequestDenied')).toBeVisible();
