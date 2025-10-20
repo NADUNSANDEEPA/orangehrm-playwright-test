@@ -14,7 +14,7 @@ test.describe('SauceDemo Login Tests using Playwright', () => {
     await page.evaluate(() => {
       localStorage.clear();
       sessionStorage.clear();
-    });
+    });          
   });
 
   test('Test Case 01 : Logs in successfully with standard_user', async ({ page }) => {

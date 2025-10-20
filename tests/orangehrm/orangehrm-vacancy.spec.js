@@ -28,10 +28,10 @@ test.describe.serial('OrangeHRM Recruitment - Vacancy Form', () => {
   });
 
   test.afterAll(() => {
-    console.log(`\n✅ Total Passed: ${passCount}`);
-    console.log(`❌ Total Failed: ${failCount}`);
+    console.log(`\nTotal Passed: ${passCount}`);
+    console.log(`Total Failed: ${failCount}`);
     if (errors.length > 0) {
-      console.log('\n📋 Error Details:');
+      console.log('\nError Details:');
       errors.forEach(e => console.log(`- ${e.test}: ${e.error}`));
     }
   });

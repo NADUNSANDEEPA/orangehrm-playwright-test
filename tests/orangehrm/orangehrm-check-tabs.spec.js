@@ -5,7 +5,7 @@ const { ORANGE_HRM_LINK } = require('../../config');
 
 const tabs = [
     'Personal Details', 'Contact Details', 'Emergency Contacts', 'Dependents', 'Immigration',
-    'Job', 'Salary', 'Salary', 'Report-to', 'Qualifications', 'Memberships'
+    'Job', 'Salary', 'Report-to', 'Qualifications', 'Memberships'
 ];
 
 test.describe('OrangeHRM Check Tabs', () => {

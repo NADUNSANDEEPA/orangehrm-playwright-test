@@ -6,7 +6,7 @@ const { CartPage } = require('./poms/CartPage');
 test.describe('SauceDemo Cart Tests (Using Commands)', () => {
 
   test.beforeAll(() => {
-    console.log('🚀 Starting SauceDemo Tests');
+    console.log('Starting SauceDemo Cart Tests');
   });
 
   test.beforeEach(async ({ page }) => {

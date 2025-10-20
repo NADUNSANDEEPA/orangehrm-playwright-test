@@ -16,7 +16,6 @@ test.describe('OrangeHRM User Add Page', () => {
     await page.goto(`${ORANGE_HRM_LINK}/web/index.php/auth/login`);
     await loginUI(page, 'Admin', 'admin123');
     await page.goto(url);
-    await page.waitForTimeout(12000); 
   });
 
   test.afterEach(async ({ page }, testInfo) => {
