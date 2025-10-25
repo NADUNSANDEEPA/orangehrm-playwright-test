@@ -102,7 +102,7 @@ test.describe('OrangeHRM User Add Page', () => {
     await userAddPage.errorMessagesContain('Invalid');
   });
 
-  test('Test Case 06 : shows required field errors when submitted empty', async ({ page }) => {
+  test('Test Case 06 : Shows required field errors when submitted empty', async ({ page }) => {
     const userAddPage = new UserAddPage(page);
     await userAddPage.fillForm({
       userRole: '',
@@ -127,4 +127,5 @@ test.describe('OrangeHRM User Add Page', () => {
     await expect(errorMessages.nth(4)).toContainText('Required');
     await expect(errorMessages.nth(5)).toContainText('Passwords do not match');
   });
+  
 });

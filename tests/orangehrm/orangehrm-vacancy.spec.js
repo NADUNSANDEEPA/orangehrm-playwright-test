@@ -75,7 +75,23 @@ test.describe.serial('OrangeHRM Recruitment - Vacancy Form', () => {
     ]);
   });
 
-  test('Test Case 03: Positions - Should be a numeric value', async ({ page }) => {
+  test('Test Case 03: Positions - Vacancy Already exists', async ({ page }) => {
+    const vacancyPage = new VacancyPage(page);
+    await vacancyPage.fillForm({
+      name: randomVacancy,
+      jobTitle: 'IT Manager',
+      description: 'Responsible for testing applications',
+      manager: true,
+      positions: 'abc',
+      active: true,
+      publish: true
+    });
+
+    const errorMessage = await vacancyPage.getErrorMessage();
+    expect(errorMessage).toContain('Already exists');
+  });
+
+  test('Test Case 04: Positions - Should be a numeric value', async ({ page }) => {
     const vacancyPage = new VacancyPage(page);
     await vacancyPage.fillForm({
       name: randomVacancy + 'X',

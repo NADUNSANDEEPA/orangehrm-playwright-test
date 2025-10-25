@@ -45,7 +45,7 @@ class VacancyPage {
     // --- Hiring Manager ---
     if (manager) {
       await this.managerInput.fill("a");
-      await this.page.waitForSelector('.oxd-autocomplete-option', { timeout: 10000 });
+      await this.page.waitForSelector('.oxd-autocomplete-option', { timeout: 50000 });
       await this.managerOption.first().click();
     }
 
