@@ -3,11 +3,60 @@ const { PARA_BANK_LINK } = require('../../config');
 const { fillRegistrationForm, checkErrorMessage } = require('./helpers/bankLoginHelper');
 const { GlobalCredentialsForBank } = require('./GlobalCredentialsForBank');
 
+let passCount = 0;
+let failCount = 0;
+const errors = [];
+const testTimes = [];
 
 test.describe('Parabank Registration Tests Using Commands', () => {
 
+    test.beforeAll(async () => {
+        console.log('===== Starting Parabank Registration Test Suite =====');
+    });
+
     test.beforeEach(async ({ page }) => {
         await page.goto(`${PARA_BANK_LINK}/parabank/register.htm`);
+        test.info().startTime = performance.now();
+    });
+
+    test.afterEach(async ({}, testInfo) => {
+        const duration = (performance.now() - testInfo.startTime).toFixed(2);
+        const status = testInfo.status;
+        const testName = testInfo.title;
+
+        testTimes.push({ testName, time: duration, status });
+
+        if (status === 'passed') passCount++;
+        if (status === 'failed') {
+            failCount++;
+            errors.push({
+                test: testName,
+                error: testInfo.error ? testInfo.error.message : 'Unknown error',
+            });
+        }
+
+        console.log(`Test "${testName}" finished in ${duration}ms [${status}]`);
+    });
+
+    test.afterAll(async () => {
+        console.log("===== TEST SUMMARY =====");
+        console.log(`Passed: ${passCount}`);
+        console.log(`Failed: ${failCount}`);
+
+        const totalTests = passCount + failCount;
+        const successRate = totalTests > 0 ? ((passCount / totalTests) * 100).toFixed(2) : 0;
+        console.log(`Success Rate: ${successRate}%`);
+
+        console.log("Detailed Timings:");
+        testTimes.forEach((t) => {
+            console.log(`- ${t.testName}: ${t.time}ms [${t.status}]`);
+        });
+
+        if (errors.length > 0) {
+            console.log("Errors captured during test run:");
+            errors.forEach((err) => console.log(`- ${err.test}: ${err.error}`));
+        }
+        console.log("===== Finished Parabank Registration Tests Using Commands =====");
     });
 
     test('Test Case 01 : Should show errors when submitting empty form', async ({ page }) => {
@@ -70,4 +119,5 @@ test.describe('Parabank Registration Tests Using Commands', () => {
         const error = page.locator('.error');
         await expect(error).toContainText('This username already exists');
     });
+
 });
