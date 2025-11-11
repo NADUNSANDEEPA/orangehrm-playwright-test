@@ -42,8 +42,8 @@ test.describe('OrangeHRM User Add Page', () => {
       employeeName: validUserName,
       status: 'Enabled',
       username: username,
-      password: 'StrongPass!123',
-      confirmPassword: 'StrongPass!123'
+      password: 'UserPassCode!123',
+      confirmPassword: 'UserPassCode!123'
     });
     
     await expect(page).toHaveURL(/\/web\/index.php\/admin\/viewSystemUsers/, { timeout: 15000 });
@@ -56,8 +56,8 @@ test.describe('OrangeHRM User Add Page', () => {
       employeeName: validUserName,
       status: 'Enabled',
       username: 'i',
-      password: 'StrongPass!123',
-      confirmPassword: 'StrongPass!123'
+      password: 'UserPassCode!123',
+      confirmPassword: 'UserPassCode!123'
     });
     await userAddPage.errorMessagesContain('Should be at least 5 characters');
   });
@@ -69,8 +69,8 @@ test.describe('OrangeHRM User Add Page', () => {
       employeeName: validUserName,
       status: 'Enabled',
       username: username,
-      password: 'StrongPass!123',
-      confirmPassword: 'StrongPass!123'
+      password: 'UserPassCode!123',
+      confirmPassword: 'UserPassCode!123'
     });
     await userAddPage.errorMessagesContain('Already exists');
   });
@@ -96,8 +96,8 @@ test.describe('OrangeHRM User Add Page', () => {
       employeeName: false,
       status: 'Enabled',
       username: 'username' + Math.floor(Math.random() * 1000),
-      password: 'StrongPass!123',
-      confirmPassword: 'StrongPass!123'
+      password: 'UserPassCode!123',
+      confirmPassword: 'UserPassCode!123'
     });
     await userAddPage.errorMessagesContain('Invalid');
   });

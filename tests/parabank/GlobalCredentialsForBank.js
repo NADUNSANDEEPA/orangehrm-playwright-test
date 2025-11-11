@@ -1,5 +1,5 @@
 class GlobalCredentialsForBank {
-    static username = "USER0926377";
+    static username = "USER0926322";
     static password = "PASSWORD123!";
 
     static setUsername(user) {

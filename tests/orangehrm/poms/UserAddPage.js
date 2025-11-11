@@ -3,14 +3,21 @@ const { expect } = require('@playwright/test');
 class UserAddPage {
   constructor(page) {
     this.page = page;
+
     this.userRoleDropdown = page.locator('div.oxd-input-group:has(label:has-text("User Role")) .oxd-select-wrapper');
     this.employeeNameInput = page.locator('div.oxd-input-group:has(label:has-text("Employee Name")) input[placeholder="Type for hints..."]');
     this.statusDropdown = page.locator('div.oxd-input-group:has(label:has-text("Status")) .oxd-select-wrapper');
     this.usernameInput = page.locator('div.oxd-input-group:has(label:has-text("Username")) input.oxd-input');
-    this.passwordInput = page.locator('div.oxd-input-group:has(label:has-text("Password")) input[type="password"]').first();
-    this.confirmPasswordInput = this.page.locator('div.oxd-input-group:has(label:has-text("Confirm Password")) input[type="password"]').first()
-    this.saveButton = page.locator('button:has-text("Save")');
 
+    this.passwordInput = page.locator(
+      'div.oxd-input-group:has(label:has-text("Password")) input[type="password"]'
+    ).first();
+
+    this.confirmPasswordInput = page.locator(
+      'div.oxd-input-group:has(label:has-text("Confirm Password")) input[type="password"]'
+    ).first();
+    
+    this.saveButton = page.locator('button:has-text("Save")');
     this.autocompleteOption = page.locator('.oxd-autocomplete-option').first();
     this.errorMessages = page.locator('.oxd-input-group__message, .oxd-input-field-error-message');
   }
@@ -32,7 +39,7 @@ class UserAddPage {
   }
 
   async fillEmployeeName(name) {
-    var empName = "a";
+    const empName = 'a';
     if (name) {
       await this.employeeNameInput.fill(empName.charAt(0));
       await this.page.waitForTimeout(1500);
@@ -42,7 +49,6 @@ class UserAddPage {
       await this.employeeNameInput.fill('');
     }
   }
-
 
   async fillUsername(username) {
     if (username !== undefined) {
@@ -58,11 +64,10 @@ class UserAddPage {
 
   async fillConfirmPassword(confirmPassword) {
     if (confirmPassword !== undefined) {
-      await confirmPasswordInput.waitFor({ state: 'visible', timeout: 10000 });
-      await confirmPasswordInput.fill(confirmPassword);
+      await this.confirmPasswordInput.waitFor({ state: 'visible', timeout: 10000 });
+      await this.confirmPasswordInput.fill(confirmPassword);
     }
   }
-
 
   async clickSave() {
     await this.saveButton.click();
@@ -73,8 +78,17 @@ class UserAddPage {
     await this.fillEmployeeName(employeeName);
     await this.selectStatus(status);
     await this.fillUsername(username);
+
+    await this.page.waitForTimeout(1000);
+
     await this.fillPassword(password);
+
+    await this.page.waitForTimeout(1000);
+
     await this.fillConfirmPassword(confirmPassword);
+
+    await this.page.waitForTimeout(500);
+
     await this.clickSave();
   }
 
